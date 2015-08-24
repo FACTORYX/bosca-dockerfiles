@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker build -t grokbox/nodejs ./code
+docker build -t grokbox/nodejs-test ./test
