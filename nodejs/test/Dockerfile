@@ -2,10 +2,10 @@ FROM iojs:2.5
 
 ADD ./app/ /app/
 ADD ./npmrc /root/.npmrc
+RUN apt-get update && apt-get install build-essential -y
 
-RUN useradd -ms /bin/bash user
+RUN useradd -ms /bin/bash user && chown -R user:user /app
 ENV HOME /home/user
-RUN chown -R user:user /app
 USER user
 
 WORKDIR /app
