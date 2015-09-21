@@ -1,0 +1,59 @@
+{{ range $host, $containers := groupByMulti $ "Env.CLUSTER_UPSTREAM" "," }}
+
+  upstream {{ $host }} {
+    least_conn;
+    {{ range $container := $containers }}
+      {{ $addrLen := len $container.Addresses }}
+      {{ if eq $addrLen 1 }}{{ $address := index $container.Addresses 0 }}
+          server {{ $address.IP }}:{{ $address.Port }};
+      {{ end }}{{ end }}
+  }
+{{ end }}
+
+server {
+  listen 8080;
+  index index.html;
+  root /www/app/public;
+  error_page 404 =200 /index.html;
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+  gzip on;
+
+
+
+
+{{ range $host, $containers := groupByMulti $ "Env.CLUSTER_UPSTREAM" "," }}
+
+  {{ if eq $host "static" }}
+  location / {
+    try_files $uri /index.html;
+    tcp_nodelay off;
+    access_log off;
+    expires off;
+    add_header Cache-Control no-cache;
+  }
+  {{else}}
+  {{ $path := or (first (groupByKeys $containers "Env.CLUSTER_PATH")) "/" }}
+  location ~ ^({{ $path }}) {
+    proxy_pass http://{{ $host }};
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-NginX-Proxy true;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    access_log /var/log/nginx/app.{{ $host }}.access.log;
+    error_log /var/log/nginx/app.{{ $host }}.err.log;
+    expires off;
+  }
+
+  {{ end }}
+
+{{ end }}
+
+}
