@@ -1,4 +1,4 @@
-FROM factoryx/nodejs:4.0.0
+FROM factoryx/nodejs:4.1.1
 
 RUN apt-get update -y && apt-get install -y -q curl python build-essential
 
