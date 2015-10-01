@@ -1,4 +1,4 @@
-FROM iojs:2.5
+FROM iojs:2.5.0
 
 ADD ./app/ /app/
 ADD ./npmrc /root/.npmrc

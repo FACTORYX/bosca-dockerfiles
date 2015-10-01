@@ -2,4 +2,6 @@
 
 console.log('test');
 
-done();
+var test = function() {
+  return true;
+}
