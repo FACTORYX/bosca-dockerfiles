@@ -1,4 +1,4 @@
-FROM iojs:2.5.0
+FROM factoryx/nodejs:4.1.1
 
 ADD ./app/ /app/
 ADD ./npmrc /root/.npmrc
@@ -12,4 +12,4 @@ WORKDIR /app
 
 RUN npm i
 
-EXPOSE 80
+EXPOSE 8080
