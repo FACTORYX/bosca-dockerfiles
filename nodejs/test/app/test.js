@@ -11,5 +11,5 @@ module.exports = function(box) {
       clue: 'Did you create the variable add?',
       solution: "var add = 'add var'"
     }]
-  }]
-}
+  }];
+};
